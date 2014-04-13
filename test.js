@@ -27,24 +27,47 @@ onError = function(_result){
 
 AR.Camera.startCameraView(onSuccess, onError);
 (function(){
-    console.log("H");
-    for(var key = 0; key < Points.length; key++){
-	var a = dist(Points[0][1],Points[0][0],
-		     Points[key][1],Points[key][0]);
-	console.log(a);
-    }
-    var t = dist(35.646090,139.750531,
-		 35.646439,139.750327);
-
+    onSuccess = function(_result){
+	alert(_result.getStatus());
+    };
     
-    navigator.geolocation.getCurrentPosition(
-	function(position){
-	    var lat = position.coords.latitude;
-	    var lng = position.coords.longitude;
-	    var txt = "緯度："+lat+"<br />経度："+lng;
-	    console.log(lat,lng);
-	    //document.getElementById("pos").innerHTML = txt;
-	},function(){},{enableHighAccuracy:true});
+    onError = function(_result){
+	alert(_result.getStatus() + "\n" + _result.getValue());
+    };
+    
+    var superimposedGraphic = new AR.Renderer.SuperimposedGraphic();
+    var squareModelGraphic = new AR.Renderer.SquareModelGraphic();
+    
+    var scale = new AR.Renderer.Point();
+    scale.setX(1.0);
+    scale.setY(1.0);
+    scale.setZ(1.0);
+    squareModelGraphic.setScale(scale);
+    
+    var texture = new AR.Renderer.TextTexture();
+    texture.setColor(4289720046);
+    texture.setText("テキスト");
+    squareModelGraphic.setTexture(texture);
+    
+    superimposedGraphic.setGraphic(squareModelGraphic);
+    superimposedGraphic.setProjectionType(AR.Renderer.SuperimposedGraphic.ProjectionType.ORTHO2D);
+    
+    var rotation = new AR.Renderer.Point();
+    rotation.setX(0.0);
+    rotation.setY(0.0);
+    rotation.setZ(0.0);
+    superimposedGraphic.setRotation(rotation);
+    
+    var translation = new AR.Renderer.Point();
+    translation.setX(1.0);
+    translation.setY(1.0);
+    translation.setZ(0.0);
+    superimposedGraphic.setTranslation(translation);
+    
+    var coordinateSystem = new AR.Renderer.FJARMarkerCoordinateSystem();
+    coordinateSystem.setValue(1);
+    
+    AR.Renderer.put(coordinateSystem, [superimposedGraphic], onSuccess, onError);
 })();
 
 // http://192.168.1.100:9021
